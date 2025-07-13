@@ -9,6 +9,8 @@
         "strictPropertyInitialization": true,
         "strictNullChecks": true,
         "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "outDir": "dist",
         "types": [
             "node",
             "@wdio/globals/types",
@@ -16,6 +18,6 @@
             "@wdio/visual-service"
         ]       
     },
-    "include": ["./**/*.ts"],
+    "include": ["./**/*.ts", "scripts"],
     "exclude": ["node_modules", "dist"]
 }

@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:report": "tsc",
+    "pack:report": "ts-node scripts/pack-report.ts"
   },
   "repository": {
     "type": "git",
@@ -17,6 +19,7 @@
   },
   "homepage": "https://github.com/jardelz/wdio-test#readme",
   "devDependencies": {
+    "@types/node": "^24.0.13",
     "@wdio/cli": "^9.17.1",
     "@wdio/local-runner": "^9.17.0",
     "@wdio/mocha-framework": "^9.17.0",
@@ -26,5 +29,8 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "webdriverio": "^9.17.0"
+  },
+  "dependencies": {
+    "inline-source": "^8.0.3"
   }
 }
