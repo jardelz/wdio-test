@@ -24,26 +24,26 @@ interface TestItem {
 
 const inputJsonPath = '.tmp/actual/output.json';
 const outputDir = path.join(process.cwd(), 'visual-report');
-const imagesDir = path.join(outputDir, 'images');
 
-function copyImageToOutput(originalPath: string, prefix: string, index: number): string {
-  if (!originalPath || !fs.existsSync(originalPath)) return '';
-  const ext = path.extname(originalPath);
-  const fileName = `${prefix}-${index}${ext}`;
-  const destPath = path.join(imagesDir, fileName);
-  fs.copyFileSync(originalPath, destPath);
-  return `images/${fileName}`;
+function getImageBase64(filePath: string): string {
+  if (!filePath || !fs.existsSync(filePath)) return '';
+  const ext = path.extname(filePath).toLowerCase();
+  let mimeType = 'image/png'; // default
+
+  if (ext === '.jpg' || ext === '.jpeg') mimeType = 'image/jpeg';
+  else if (ext === '.gif') mimeType = 'image/gif';
+  else if (ext === '.webp') mimeType = 'image/webp';
+  else if (ext === '.svg') mimeType = 'image/svg+xml';
+
+  const fileBuffer = fs.readFileSync(filePath);
+  const base64 = fileBuffer.toString('base64');
+  return `data:${mimeType};base64,${base64}`;
 }
 
 if (!fs.existsSync(inputJsonPath)) {
   console.error(`Arquivo JSON não encontrado: ${inputJsonPath}`);
   process.exit(1);
 }
-
-if (fs.existsSync(outputDir)) {
-  fs.rmSync(outputDir, { recursive: true, force: true });
-}
-fs.mkdirSync(imagesDir, { recursive: true });
 
 const reportData: ReportItem[] = JSON.parse(fs.readFileSync(inputJsonPath, 'utf-8'));
 
@@ -61,11 +61,9 @@ for (const group of reportData) {
 
       const { fileData, tag, description, test, misMatchPercentage } = item;
 
-      const actualRelPath = copyImageToOutput(fileData.actualFilePath, 'actual', globalIndex);
-      const baselineRelPath = copyImageToOutput(fileData.baselineFilePath, 'baseline', globalIndex);
-      const diffRelPath = fileData.diffFilePath
-        ? copyImageToOutput(fileData.diffFilePath, 'diff', globalIndex)
-        : '';
+      const actualDataUri = getImageBase64(fileData.actualFilePath);
+      const baselineDataUri = getImageBase64(fileData.baselineFilePath);
+      const diffDataUri = fileData.diffFilePath ? getImageBase64(fileData.diffFilePath) : '';
 
       globalIndex++;
 
@@ -88,15 +86,15 @@ for (const group of reportData) {
           <div class="img-row">
             <div class="img-container">
               <p>Actual</p>
-              <img src="${actualRelPath}" alt="Actual Image" />
+              <img src="${actualDataUri}" alt="Actual Image" />
             </div>
             <div class="img-container">
               <p>Baseline</p>
-              <img src="${baselineRelPath}" alt="Baseline Image" />
+              <img src="${baselineDataUri}" alt="Baseline Image" />
             </div>
-            ${diffRelPath ? `<div class="img-container">
+            ${diffDataUri ? `<div class="img-container">
               <p>Diff</p>
-              <img src="${diffRelPath}" alt="Diff Image" />
+              <img src="${diffDataUri}" alt="Diff Image" />
             </div>` : ''}
           </div>
         </div>
@@ -109,6 +107,11 @@ for (const group of reportData) {
 const tagsArr = Array.from(tags);
 const descsArr = Array.from(descs);
 const testsArr = Array.from(tests);
+
+if (fs.existsSync(outputDir)) {
+  fs.rmSync(outputDir, { recursive: true, force: true });
+}
+fs.mkdirSync(outputDir, { recursive: true });
 
 const html = `<!DOCTYPE html>
 <html lang="en">
@@ -176,44 +179,44 @@ const html = `<!DOCTYPE html>
     margin: 0.3rem 0 0.8rem 0;
     font-weight: bold;
   }
-.img-row {
-  display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  max-width: 100vw;
-  padding: 1rem;
-  background: white;
-  border-radius: 8px;
-  justify-content: center; /* centraliza imagens */
-  align-items: flex-start;
-  flex-wrap: nowrap;       /* só uma linha */
-}
-
-.img-container {
-  flex: 0 0 auto;          /* tamanho do conteúdo */
-  text-align: center;
-  max-width: 100vw;
-  display: inline-block;
-}
-
+  .img-row {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: hidden;
+    max-width: 100vw;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    justify-content: center; /* centraliza as imagens horizontalmente */
+    align-items: flex-start;
+    flex-wrap: nowrap; /* só uma linha */
+  }
+  .img-container {
+    flex: 0 1 auto; /* encolhe se necessário, não cresce além do necessário */
+    text-align: center;
+    max-width: 33%; /* não ocupa mais que 1/3 da linha */
+    min-width: 0; /* evita overflow */
+    display: inline-block;
+  }
   .img-container p {
     margin: 0.5rem 0;
     font-weight: 600;
     font-size: 0.9rem;
     color: #333;
   }
-.img-container img {
-  width: auto;
-  max-width: 100vw;
-  max-height: 600px;
-  height: auto;
-  display: block;
-  border-radius: 4px;
-  background: #f5f5f5;
-  box-shadow: 0 0 4px rgba(0,0,0,0.1);
-  user-select: none;
-  object-fit: contain;
-}
+  .img-container img {
+    width: auto;
+    max-width: 100%;
+    max-height: 600px;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+    background: #f5f5f5;
+    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    user-select: none;
+    object-fit: contain;
+    flex-shrink: 1;
+  }
 </style>
 </head>
 <body>
