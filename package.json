@@ -20,14 +20,21 @@
   "homepage": "https://github.com/jardelz/wdio-test#readme",
   "devDependencies": {
     "@types/node": "^24.0.13",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
     "@wdio/cli": "^9.17.1",
     "@wdio/local-runner": "^9.17.0",
     "@wdio/mocha-framework": "^9.17.0",
     "@wdio/types": "^9.16.2",
     "@wdio/visual-reporter": "^0.4.10",
     "@wdio/visual-service": "^8.0.4",
+    "fs": "^0.0.1-security",
     "inline-source": "^8.0.3",
+    "path": "^0.12.7",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "webdriverio": "^9.17.0"
   }
