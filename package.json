@@ -26,11 +26,9 @@
     "@wdio/types": "^9.16.2",
     "@wdio/visual-reporter": "^0.4.10",
     "@wdio/visual-service": "^8.0.4",
+    "inline-source": "^8.0.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "webdriverio": "^9.17.0"
-  },
-  "dependencies": {
-    "inline-source": "^8.0.3"
   }
 }
