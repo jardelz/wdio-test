@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "sourceMap": false,
+        "target": "es2024",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "removeComments": true,
+        "noImplicitAny": true,
+        "strictPropertyInitialization": true,
+        "strictNullChecks": true,
+        "esModuleInterop": true,
+        "types": [
+            "node",
+            "@wdio/globals/types",
+            "@wdio/mocha-framework",
+            "@wdio/visual-service"
+        ]       
+    },
+    "include": ["./**/*.ts"],
+    "exclude": ["node_modules", "dist"]
+}
